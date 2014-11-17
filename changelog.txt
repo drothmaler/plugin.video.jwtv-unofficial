@@ -1,2 +1,5 @@
-v1.0.0
+v0.0.2
+- Most categories and sub-categories work, streaming still broken.
+
+v0.0.1
 - Initial version
