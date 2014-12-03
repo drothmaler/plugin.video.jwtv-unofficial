@@ -7,6 +7,9 @@ addon_handle = int(sys.argv[1])
 args = urlparse.parse_qs(sys.argv[2][1:])
 
 xbmcplugin.setContent(addon_handle, 'movies')
+hq_video = xbmcplugin.getSetting(addon_handle, 'hq_video')
+
+print hq_video
 
 def build_url(query):
 	return base_url + '?' + urllib.urlencode(query)
@@ -29,9 +32,11 @@ def build_media_entries(file_ary):
 		li = xbmcgui.ListItem(r.get('title'))
 		li.setIconImage(wide_img)
 		li.setThumbnailImage(img)
+		li.addStreamInfo('video', {'duration':r.get('duration')})
 		li.setProperty('fanart_image', wide_img)
+		index = -1 if hq_video == 'true' else 0
 		xbmcplugin.addDirectoryItem(handle=addon_handle,
-									url=r['files'][-1].get('progressiveDownloadURL'),
+									url=r['files'][index].get('progressiveDownloadURL'),
 									listitem=li)
 
 mode = args.get('mode', None)
@@ -49,7 +54,6 @@ if mode is None:
 
 else:
 	url = 'http://mediator.jw.org/v1/categories/E/' + mode[0] + '?&detailed=1'
-	print '==> Entering ' + url
 	data = urllib2.urlopen(url).read().decode("utf-8")
 	info = json.loads(data)
 	if 'subcategories' in info['category']: build_folders(info['category']['subcategories'])
