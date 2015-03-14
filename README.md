@@ -1,7 +1,6 @@
-Unofficial plugin JW Broadcasting
+Unofficial plugin for JW Broadcasting
 ==========================================
 Compatible with most XBMC and Kodi installations
-
 
 ### Tested on:
  * Amazon Fire TV (XBMC Gotham)
@@ -15,3 +14,5 @@ PlayJam GameStick (U.S. - GameStop may have one for ~$20 USD, Tofu is preinstall
 
 ### Installation guide
 Many thanks to Dennis Gutowski for creating a [step by step guide](http://dennygoot.blogspot.com/2015/02/jw-broadcasting-in-xbmc-or-kodi.html) for getting this add-on installed.
+
+**Note:** Please do not contact jw.org for support of any kind. This is unofficial which means changes to tv.jw.org may break this add-on. If you feel the need for techincal support, please leave an issue in GitHub so that others may benefit from the answers to your questions. Thank you.
