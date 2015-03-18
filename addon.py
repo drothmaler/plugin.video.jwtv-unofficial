@@ -7,9 +7,7 @@ addon_handle = int(sys.argv[1])
 args = urlparse.parse_qs(sys.argv[2][1:])
 
 xbmcplugin.setContent(addon_handle, 'movies')
-hq_video = xbmcplugin.getSetting(addon_handle, 'hq_video')
-
-print hq_video
+video_res = [720,480,360,180][int(xbmcplugin.getSetting(addon_handle, 'video_res'))]
 
 def build_url(query):
 	return base_url + '?' + urllib.urlencode(query)
@@ -34,9 +32,9 @@ def build_media_entries(file_ary):
 		li.setThumbnailImage(img)
 		li.addStreamInfo('video', {'duration':r.get('duration')})
 		li.setProperty('fanart_image', wide_img)
-		index = -1 if hq_video == 'true' else 0
+		video = sorted([x for x in r['files'] if x['frameHeight'] <= video_res], reverse=True)[0]
 		xbmcplugin.addDirectoryItem(handle=addon_handle,
-									url=r['files'][index].get('progressiveDownloadURL'),
+									url=video['progressiveDownloadURL'],
 									listitem=li)
 
 mode = args.get('mode', None)

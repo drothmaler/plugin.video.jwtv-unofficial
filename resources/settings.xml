@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <setting id="hq_video" type="bool" default="true" label="Stream high quality video"/>
+    <setting  id="video_res" type="enum" default="0"
+              values="720p|480p|360p|240p" label="Video Resolution" />
 </settings>

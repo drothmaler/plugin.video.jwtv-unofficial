@@ -1,3 +1,6 @@
+v0.0.5
+- Video download resolution is now selectable.
+
 v0.0.4
 - Bundled simplejson for folks who don't have it already.
 
