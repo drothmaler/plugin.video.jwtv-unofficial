@@ -2,6 +2,8 @@ Unofficial plugin for JW Broadcasting
 ==========================================
 Compatible with most XBMC and Kodi installations
 
+[Web Site](http://ca0abinary.github.io/plugin.video.jwtv-unofficial)
+
 ### Tested on:
  * Amazon Fire TV (XBMC Gotham)
  * Linux (XBMC, Kodi)
