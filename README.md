@@ -10,6 +10,7 @@ Compatible with most XBMC and Kodi installations
  * Mac OS X (XBMC Gotham, Kodi Helix)
  * Windows (Kodi Helix)
  * PlayJam GameStick (Tofu)
+ * Google Nexus Player (Kodi Helix)
 
 ### Cheapest hardware:
 PlayJam GameStick (U.S. - GameStop may have one for ~$20 USD, Tofu is preinstalled, put the zip on a microSD and install it like normal)
