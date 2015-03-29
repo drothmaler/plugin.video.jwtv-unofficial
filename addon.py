@@ -19,7 +19,6 @@ def build_folders(subcat_ary):
 		url = build_url({'mode': s.get('key')})
 		li = xbmcgui.ListItem(s.get('name'))
 		xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
-		if 'media' in s: build_media_entries(s['media'])
 
 def get_video_metadata(file_ary):
 	videoFiles = []
