@@ -1,3 +1,7 @@
+v1.7.0
+- Fixed pictures that weren't showing correctly.
+- Implemented streaming. Am I done now?!? Can it be? Nah... there are always bugs.
+
 v1.6.1
 - Fixed navigation
 
