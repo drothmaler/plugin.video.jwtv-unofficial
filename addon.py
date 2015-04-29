@@ -98,14 +98,13 @@ def process_sub_level(sub_level, create_playlist, from_id):
 	info = json.loads(data)
 	if create_playlist == False:
 		if 'subcategories' in info['category']: build_folders(info['category']['subcategories'])
-		elif 'media' in info['category']: build_media_entries(info['category']['media'])
+		if 'media' in info['category']: build_media_entries(info['category']['media'])
 		xbmcplugin.endOfDirectory(addon_handle)
 	else:
 		pl = build_playlist(info['category']['media'], from_id)
 		xbmc.Player().play(pl)
 
 def process_streaming():
-	print 'entering process_streaming for ' + mode[0]
 	url = 'http://mediator.jw.org/v1/schedules/E/Streaming'
 	data = urllib2.urlopen(url).read().decode("utf-8")
 	info = json.loads(data)
