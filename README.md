@@ -5,7 +5,7 @@ Compatible with most XBMC and Kodi installations
 [Web Site](http://ca0abinary.github.io/plugin.video.jwtv-unofficial)
 
 ### Tested on:
- * Amazon Fire TV (XBMC Gotham)
+ * Amazon Fire TV / Fire TV Stick (XBMC Gotham, Kodi Helix)
  * Linux (XBMC, Kodi)
  * Mac OS X (XBMC Gotham, Kodi Helix)
  * Windows (Kodi Helix)
