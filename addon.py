@@ -1,5 +1,5 @@
 import urllib,urllib2,urlparse
-import xbmcplugin,xbmcgui,sys
+import xbmcplugin,xbmcaddon,xbmcgui,sys
 import simplejson as json
 
 base_url = sys.argv[0]
@@ -11,8 +11,16 @@ vres = xbmcplugin.getSetting(addon_handle, 'video_res')
 if vres not in ['0','1','2','3']: vres = '0'
 video_res = [720,480,360,180][int(vres)]
 
+addon = xbmcaddon.Addon()
+language = addon.getSetting('language')
+if len('' + language) < 1: language = 'E'
+
 def build_url(query):
 	return base_url + '?' + urllib.urlencode(query)
+
+def get_json(url):
+	data = urllib2.urlopen(url).read().decode("utf-8")
+	return json.loads(data)
 
 def build_folders(subcat_ary):
 	isStreaming = mode[0] == 'Streaming'
@@ -35,7 +43,7 @@ def get_video_metadata(file_ary):
 		elif 'cvr' in r['images']: sqr_img = r['images']['cvr'].get('md')
 		if 'pnr' in r['images']: wide_img = r['images']['pnr'].get('md')
 		video = sorted([x for x in r['files'] if x['frameHeight'] <= video_res], reverse=True)[0]
-		videoFiles.append({'id':r['_id'],'video':video['progressiveDownloadURL'],'wide_img':wide_img,'sqr_img':sqr_img,'title':r.get('title'),'dur':r.get('duration')})
+		videoFiles.append({'id':r['guid'],'video':video['progressiveDownloadURL'],'wide_img':wide_img,'sqr_img':sqr_img,'title':r.get('title'),'dur':r.get('duration')})
 	return videoFiles
 
 def build_media_entries(file_ary):
@@ -51,13 +59,20 @@ def build_media_entries(file_ary):
 		xbmcplugin.addDirectoryItem(handle=addon_handle, url=v['video'], listitem=li)
 
 def process_top_level():
-	cats_raw = urllib2.urlopen("http://mediator.jw.org/v1/categories/E?").read().decode("utf-8")
+	url = 'http://mediator.jw.org/v1/categories/' + language + '?'
+	print url
+	cats_raw = urllib2.urlopen(url).read().decode('utf-8')
 	categories = json.loads(cats_raw)
 
 	for c in categories['categories']:
-		url = build_url({'mode': c.get('key')})
-		li = xbmcgui.ListItem(c.get('name'))
-		xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
+		if len(c.get('description')) > 0:
+			url = build_url({'mode': c.get('key')})
+			li = xbmcgui.ListItem(c.get('name'))
+			xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
+
+	url = build_url({'mode': 'languages'})
+	li = xbmcgui.ListItem('-- Set Language --')
+	xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
 
 	xbmcplugin.endOfDirectory(addon_handle)
 
@@ -93,9 +108,7 @@ def build_playlist(file_ary, first):
 	return pl
 
 def process_sub_level(sub_level, create_playlist, from_id):
-	url = 'http://mediator.jw.org/v1/categories/E/' + sub_level + '?&detailed=1'
-	data = urllib2.urlopen(url).read().decode("utf-8")
-	info = json.loads(data)
+	info = get_json('http://mediator.jw.org/v1/categories/' + language + '/' + sub_level + '?&detailed=1')
 	if create_playlist == False:
 		if 'subcategories' in info['category']: build_folders(info['category']['subcategories'])
 		if 'media' in info['category']: build_media_entries(info['category']['media'])
@@ -105,9 +118,7 @@ def process_sub_level(sub_level, create_playlist, from_id):
 		xbmc.Player().play(pl)
 
 def process_streaming():
-	url = 'http://mediator.jw.org/v1/schedules/E/Streaming'
-	data = urllib2.urlopen(url).read().decode("utf-8")
-	info = json.loads(data)
+	info = get_json('http://mediator.jw.org/v1/schedules/' + language + '/Streaming')
 	for s in info['category']['subcategories']:
 		if s['key'] == mode[0]:
 			pl = xbmc.PlayList(1)
@@ -120,9 +131,24 @@ def process_streaming():
 			xbmc.Player().seekTime(s['position']['time'])
 			return
 
+def get_languages():
+	info = get_json('http://mediator.jw.org/v1/languages/' + language + '/web')
+	for l in info['languages']:
+		url = build_url({'mode': 'set_language', 'language': l['code']})
+		li = xbmcgui.ListItem(l['vernacular'] + ' / ' + l['name'])
+		xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=False)
+	xbmcplugin.endOfDirectory(addon_handle)
+
+def set_language(language):
+	language = language
+	addon.setSetting('language', language)
+	xbmc.executebuiltin('Action(ParentDir)')
+
 mode = args.get('mode', None)
 
 if mode is None: process_top_level()
+elif mode[0] == 'languages': get_languages()
+elif mode[0] == 'set_language': set_language(args.get('language')[0])
 elif mode[0] == 'watch_from_here': process_sub_level(args.get('from_mode')[0], True, args.get('first')[0])
 elif (mode[0].startswith('Streaming') and len(mode[0]) > 9): process_streaming()
 else: process_sub_level(mode[0], False, 0)

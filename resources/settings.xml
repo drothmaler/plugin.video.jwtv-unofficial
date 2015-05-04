@@ -2,4 +2,5 @@
 <settings>
     <setting  id="video_res" type="enum" default="0"
               values="720p|480p|360p|240p" label="Video Resolution" />
+    <setting  id="language" type="text" default="E" />
 </settings>
