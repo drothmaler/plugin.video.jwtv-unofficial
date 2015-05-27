@@ -1,3 +1,7 @@
+v1.8.1
+- Conform to add-on rules for official repository submission.
+- Streaming stations repeat all for infinite playtime!
+
 v1.8.0
 - Added languages other than English and the ability to set language.
 

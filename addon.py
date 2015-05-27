@@ -1,3 +1,7 @@
+# Copyright 2015 Jonathan DeMarks
+# Licensed under the Apache License, Version 2.0
+
+import threading
 import urllib,urllib2,urlparse
 import xbmcplugin,xbmcaddon,xbmcgui,sys
 import simplejson as json
@@ -12,6 +16,7 @@ if vres not in ['0','1','2','3']: vres = '0'
 video_res = [720,480,360,180][int(vres)]
 
 addon = xbmcaddon.Addon()
+__language__ = addon.getLocalizedString
 language = addon.getSetting('language')
 if len('' + language) < 1: language = 'E'
 
@@ -19,7 +24,7 @@ def build_url(query):
 	return base_url + '?' + urllib.urlencode(query)
 
 def get_json(url):
-	data = urllib2.urlopen(url).read().decode("utf-8")
+	data = urllib2.urlopen(url).read().decode('utf-8')
 	return json.loads(data)
 
 def build_folders(subcat_ary):
@@ -55,7 +60,7 @@ def build_media_entries(file_ary):
 		li.setProperty('fanart_image', v['wide_img'])
 
 		bingeAction = 'XBMC.RunPlugin(' + build_url({'mode':'watch_from_here','from_mode':mode[0],'first':v['id']}) + ')'
-		li.addContextMenuItems([('Watch All Starting Here', bingeAction)], replaceItems=True)
+		li.addContextMenuItems([(__language__(30010), bingeAction)], replaceItems=True)
 		xbmcplugin.addDirectoryItem(handle=addon_handle, url=v['video'], listitem=li)
 
 def process_top_level():
@@ -71,10 +76,12 @@ def process_top_level():
 			xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
 
 	url = build_url({'mode': 'languages'})
-	li = xbmcgui.ListItem('-- Set Language --')
+	li = xbmcgui.ListItem(__language__(30005))
 	xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li, isFolder=True)
-
 	xbmcplugin.endOfDirectory(addon_handle)
+
+	# Analytics tracking - just to see how widespread the sue of this add-on is.
+	urllib2.urlopen('https://api.segment.io/v1/pixel/track?data=ewogICJ3cml0ZUtleSI6ICI1dUd1S0prN0dPWkJSRFlZZWplblZTTVJCUERlcXUwNCIsCiAgInVzZXJJZCI6ICIxOFloWkFwZUdHIiwKICAiZXZlbnQiOiAiVG9wIExldmVsIgp9').read()
 
 def build_playlist(file_ary, first):
 	added = 0
@@ -85,7 +92,7 @@ def build_playlist(file_ary, first):
 	total = float(len(metadata))
 
 	dl = xbmcgui.DialogProgress()
-	dl.create('Watch Multiple', 'Queueing videos...')
+	dl.create(__language__(30006), __language__(30007))
 
 	pl = xbmc.PlayList(1)
 	pl.clear()
@@ -104,7 +111,7 @@ def build_playlist(file_ary, first):
 	if added > 0:
 		xbmc.Player().play(pl)
 	else:
-		xbmcgui.Dialog().ok(" Problem ", " None of the videos are available. ")
+		xbmcgui.Dialog().ok(__language__(30008), __language__(30009))
 	return pl
 
 def process_sub_level(sub_level, create_playlist, from_id):
@@ -129,6 +136,7 @@ def process_streaming():
 				pl.add(item['video'], li)
 			xbmc.Player().play(pl)
 			xbmc.Player().seekTime(s['position']['time'])
+			xbmc.executebuiltin('PlayerControl(RepeatAll)')
 			return
 
 def get_languages():
